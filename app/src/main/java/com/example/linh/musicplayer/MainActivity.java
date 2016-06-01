@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     private Button playMusic;
     private Button buttonBack;
     private Button buttonNext;
+    private Button buttonAdd;
     private ListView lv;
     private EditText editTextName;
     private EditText editTextLink;
@@ -100,6 +101,40 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        buttonAdd = (Button) findViewById(R.id.buttonAdd);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+                View promptView = layoutInflater.inflate(R.layout.dialog_downloadlink, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                alertDialogBuilder.setView(promptView);
+                editTextName = (EditText) promptView.findViewById(R.id.textInputName);
+                editTextLink = (EditText) promptView.findViewById(R.id.textInputLink);
+                // setup a dialog window
+                alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // declare the dialog as a member field of your activity
+                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+                                intent.putExtra("URL", editTextLink.getText().toString());
+                                intent.putExtra("NAME",editTextName.getText().toString());
+                                startService(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                // create an alert dialog
+                AlertDialog alert = alertDialogBuilder.create();
+                alert.show();
+
+            }
+        });
         buttonNext = (Button) findViewById(R.id.buttonForward);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,39 +174,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        fab  = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
-                View promptView = layoutInflater.inflate(R.layout.dialog_downloadlink, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                alertDialogBuilder.setView(promptView);
-                editTextName = (EditText) promptView.findViewById(R.id.textInputName);
-                editTextLink = (EditText) promptView.findViewById(R.id.textInputLink);
-                // setup a dialog window
-                alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // declare the dialog as a member field of your activity
-                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
-                                intent.putExtra("URL", editTextLink.getText().toString());
-                                intent.putExtra("NAME",editTextName.getText().toString());
-                                startService(intent);
-                            }
-                        })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
 
-                // create an alert dialog
-                AlertDialog alert = alertDialogBuilder.create();
-                alert.show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
