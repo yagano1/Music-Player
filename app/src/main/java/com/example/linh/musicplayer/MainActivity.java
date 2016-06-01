@@ -1,18 +1,13 @@
 package com.example.linh.musicplayer;
 
 import android.app.ActivityManager;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -45,13 +40,15 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton fab;
     private Button stopMusic;
     private Button playMusic;
-    private Button buttonRefresh;
+    private Button buttonBack;
+    private Button buttonNext;
     private ListView lv;
     private EditText editTextName;
     private EditText editTextLink;
     private Bundle msg;
     private String songname;
     private String fileMusicPatch;
+    private int songPosistion = 0;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -91,7 +88,25 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
+        buttonBack = (Button) findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(songPosistion > 0)
+                {
+                    songPosistion = songPosistion -1;
+                    songplay();
+                }
+            }
+        });
+        buttonNext = (Button) findViewById(R.id.buttonForward);
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                songPosistion = songPosistion +1;
+                songplay();
+            }
+        });
         playMusic = (Button) findViewById(R.id.buttonPlay);
         playMusic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +122,7 @@ public class MainActivity extends AppCompatActivity
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                songPosistion =  position;
                 songname = lv.getItemAtPosition(position).toString();
                 fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/"+songname;
                 mediaPlayer.reset();
@@ -165,7 +181,19 @@ public class MainActivity extends AppCompatActivity
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
+    public void songplay()
+    {
+        mediaPlayer.stop();
+        songname = lv.getItemAtPosition(songPosistion).toString();
+        fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/" + songname;
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(fileMusicPatch);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
