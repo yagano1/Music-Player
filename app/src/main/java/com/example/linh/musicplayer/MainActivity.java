@@ -1,7 +1,6 @@
 package com.example.linh.musicplayer;
 
-import android.app.ActivityManager;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -25,11 +24,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private String fileMusicPatch;
     private int songPosistion = 0;
     private int totalsong;
-    /**
+        /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
@@ -62,12 +65,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         final DownloadThread mDownloadThread = new DownloadThread();
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/"+songname;
+
         mDownloadThread.setName("DownloadThread");
         mDownloadThread.start();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getListMusic();
         mediaPlayer = new MediaPlayer();
         try {
@@ -188,6 +191,10 @@ public class MainActivity extends AppCompatActivity
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+    @Subscribe
+    public void onMessageEvent(MessageEvent event){
+        getListMusic();
+    }
     public void songplay()
     {
         mediaPlayer.stop();
@@ -271,6 +278,7 @@ public class MainActivity extends AppCompatActivity
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
+        EventBus.getDefault().register(this);
         client.connect();
         Action viewAction = Action.newAction(
                 Action.TYPE_VIEW, // TODO: choose an action type.
@@ -288,7 +296,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-
+    EventBus.getDefault().unregister(this);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         Action viewAction = Action.newAction(

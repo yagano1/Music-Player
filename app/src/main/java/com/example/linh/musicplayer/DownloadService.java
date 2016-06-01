@@ -10,6 +10,8 @@ import android.os.ResultReceiver;
 import android.support.v7.app.NotificationCompat;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +29,13 @@ public class DownloadService extends IntentService {
     }
     public NotificationManager dlnottification;
     public NotificationCompat.Builder builder;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         String urlToDownload = intent.getStringExtra("URL");
@@ -84,10 +93,10 @@ private int lastupdate = 0;
                 Intent i = new Intent("com.russian.apps.TabActivity").putExtra("some_msg", progress + "%");
                 this.sendBroadcast(i);
             } else {
+                EventBus.getDefault().post(new MessageEvent("Dowload Complte"));
                 builder.setContentText("Download complete")
                         // Removes the progress bar
-                        .setProgress(0, 0, false).setOngoing(false).setContentInfo("");
-                ;
+                        .setProgress(0, 0, false).setOngoing(false).setContentInfo("");;
                 dlnottification.notify(12, builder.build());
             }
 
