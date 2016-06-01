@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     private String songname;
     private String fileMusicPatch;
     private int songPosistion = 0;
+    private int totalsong;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -103,8 +104,11 @@ public class MainActivity extends AppCompatActivity
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                songPosistion = songPosistion +1;
-                songplay();
+                if(songPosistion < totalsong)
+                {
+                    songPosistion = songPosistion + 1;
+                    songplay();
+                }
             }
         });
         playMusic = (Button) findViewById(R.id.buttonPlay);
@@ -194,17 +198,8 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    ArrayAdapter<String> abc;
+    private ArrayAdapter<String> abc;
     public  void getListMusic(){
 
         File dir = new File(Environment.getExternalStorageDirectory() + "/" + "data/");
@@ -212,6 +207,7 @@ public class MainActivity extends AppCompatActivity
         String[] theNamesOfFiles = new String[filelist.length];
         for (int i = 0; i < theNamesOfFiles.length; i++) {
             theNamesOfFiles[i] = filelist[i].getName();
+            totalsong = i;
         }
         lv = (ListView) findViewById(R.id.listMusic);
         lv.invalidateViews();
