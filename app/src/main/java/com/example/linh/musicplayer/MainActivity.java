@@ -104,13 +104,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        buttonRefresh = (Button) findViewById(R.id.buttonRefresh);
-        buttonRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getListMusic();
-            }
-        });
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
