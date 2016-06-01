@@ -90,16 +90,20 @@ private int lastupdate = 0;
                 builder.setProgress(100, Integer.valueOf(progress),
                         false).setContentInfo(progress + "%");
                 dlnottification.notify(12, builder.build());
-                Intent i = new Intent("com.russian.apps.TabActivity").putExtra("some_msg", progress + "%");
+                Intent i = new Intent("com.example.linh.musicplayer").putExtra("AAAAAAAAAAA", progress + "d%");
                 this.sendBroadcast(i);
             } else {
                 EventBus.getDefault().post(new MessageEvent("Dowload Complte"));
                 builder.setContentText("Download complete")
                         // Removes the progress bar
-                        .setProgress(0, 0, false).setOngoing(false).setContentInfo("");;
+                        .setProgress(0, 0, false).setOngoing(false).setContentInfo("");
+
                 dlnottification.notify(12, builder.build());
             }
 
         }
     }
+
+
+
 }

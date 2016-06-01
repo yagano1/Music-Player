@@ -16,6 +16,12 @@ public class MessageEvent {
     {
         this.message = message;
     }
-    
-
+public String getMessage()
+{
+    return message;
 }
+
+    }
+
+
+

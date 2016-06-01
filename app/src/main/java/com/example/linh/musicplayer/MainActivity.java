@@ -1,6 +1,5 @@
 package com.example.linh.musicplayer;
 
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -24,8 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private String fileMusicPatch;
     private int songPosistion = 0;
     private int totalsong;
+    private TextView textSongPlaying;
         /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -63,34 +62,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final DownloadThread mDownloadThread = new DownloadThread();
+        EventBus.getDefault().register(MainActivity.this);
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/"+songname;
-
-        mDownloadThread.setName("DownloadThread");
-        mDownloadThread.start();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        textSongPlaying = (TextView) findViewById(R.id.textSongPlaying);
         setSupportActionBar(toolbar);
         getListMusic();
         mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(fileMusicPatch);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        songplay();
         stopMusic = (Button) findViewById(R.id.buttonStop);
         stopMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
-                try {
-                    mediaPlayer.setDataSource(fileMusicPatch);
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                songplay();
             }
         });
         buttonBack = (Button) findViewById(R.id.buttonBack);
@@ -166,14 +153,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 songPosistion =  position;
                 songname = lv.getItemAtPosition(position).toString();
-                fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/"+songname;
-                mediaPlayer.reset();
-                try {
-                    mediaPlayer.setDataSource(fileMusicPatch);
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                songplay();
 
             }
         });
@@ -191,12 +171,21 @@ public class MainActivity extends AppCompatActivity
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
     @Subscribe
     public void onMessageEvent(MessageEvent event){
-        getListMusic();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getListMusic();
+            }
+        });
     }
+
+
     public void songplay()
     {
+        textSongPlaying.setText(songname);
         mediaPlayer.stop();
         songname = lv.getItemAtPosition(songPosistion).toString();
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/" + songname;
@@ -275,10 +264,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        EventBus.getDefault().register(this);
+
         client.connect();
         Action viewAction = Action.newAction(
                 Action.TYPE_VIEW, // TODO: choose an action type.
