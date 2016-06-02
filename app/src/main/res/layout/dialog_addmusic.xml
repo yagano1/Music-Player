@@ -6,9 +6,11 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_download"/>
+        android:text="@string/button_download"
+        android:id="@+id/buttonDownwload"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_openfile"/>
+        android:text="@string/button_openfile"
+        android:id="@+id/buttonOpenfile"/>
 </LinearLayout>

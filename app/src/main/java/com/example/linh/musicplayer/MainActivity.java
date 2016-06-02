@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     private int totalsong;
     private TextView textSongPlaying;
     private Button buttonDownloadMusic;
+    private Button buttonOpenfile;
         /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -100,7 +101,9 @@ public class MainActivity extends AppCompatActivity
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
                 alertDialogBuilder.setView(viewAddMusic);
                 AlertDialog alert = alertDialogBuilder.create();
-                alert.show();)
+                alert.show();
+                buttonDownloadMusic = (Button) viewAddMusic.findViewById(R.id.buttonDownwload);
+                buttonOpenfile = (Button) viewAddMusic.findViewById(R.id.buttonOpenfile);
 //                editTextName = (EditText) viewAddMusic.findViewById(R.id.textInputName);
 //                editTextLink = (EditText) viewAddMusic.findViewById(R.id.textInputLink);
                 // setup a dialog window
@@ -121,9 +124,6 @@ public class MainActivity extends AppCompatActivity
 //                                    }
 //                                });
 //                // create an alert dialog
-
-
-
             }
         });
         buttonNext = (Button) findViewById(R.id.buttonForward);
