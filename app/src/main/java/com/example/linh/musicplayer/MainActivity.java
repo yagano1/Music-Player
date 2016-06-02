@@ -96,34 +96,41 @@ public class MainActivity extends AppCompatActivity
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater layoutAddmusic = LayoutInflater.from(MainActivity.this);
-                View viewAddMusic = layoutAddmusic.inflate(R.layout.dialog_addmusic, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                final LayoutInflater layoutAddmusic = LayoutInflater.from(MainActivity.this);
+                final View viewAddMusic = layoutAddmusic.inflate(R.layout.dialog_addmusic, null);
+                final View viewDownloadMusic = layoutAddmusic.inflate(R.layout.dialog_downloadlink,null);
+                editTextLink = (EditText) viewDownloadMusic.findViewById(R.id.textInputLink);
+                editTextName  = (EditText) viewDownloadMusic.findViewById(R.id.textInputName);
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
                 alertDialogBuilder.setView(viewAddMusic);
-                AlertDialog alert = alertDialogBuilder.create();
-                alert.show();
+                final AlertDialog alertAddMusic = alertDialogBuilder.create();
+                alertAddMusic.show();
                 buttonDownloadMusic = (Button) viewAddMusic.findViewById(R.id.buttonDownwload);
+                buttonDownloadMusic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertAddMusic.cancel();
+                        alertDialogBuilder.setView(viewDownloadMusic);
+                        alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+                                intent.putExtra("URL", editTextLink.getText().toString());
+                                intent.putExtra("NAME",editTextName.getText().toString());
+                                startService(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        final AlertDialog alertDownloadMusic = alertDialogBuilder.create();
+                        alertDownloadMusic.show();
+                    }
+                });
                 buttonOpenfile = (Button) viewAddMusic.findViewById(R.id.buttonOpenfile);
-//                editTextName = (EditText) viewAddMusic.findViewById(R.id.textInputName);
-//                editTextLink = (EditText) viewAddMusic.findViewById(R.id.textInputLink);
-                // setup a dialog window
-//                alertDialogBuilder.setCancelable(false)
-//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                // declare the dialog as a member field of your activity
-//                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
-//                                intent.putExtra("URL", editTextLink.getText().toString());
-//                                intent.putExtra("NAME",editTextName.getText().toString());
-//                                startService(intent);
-//                            }
-//                        })
-//                        .setNegativeButton("Cancel",
-//                                new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int id) {
-//                                        dialog.cancel();
-//                                    }
-//                                });
-//                // create an alert dialog
             }
         });
         buttonNext = (Button) findViewById(R.id.buttonForward);
