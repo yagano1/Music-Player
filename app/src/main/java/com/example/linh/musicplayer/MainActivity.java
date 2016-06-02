@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity
     private ListView lv;
     private EditText editTextName;
     private EditText editTextLink;
-    private Bundle msg;
     private String songname;
     private String fileMusicPatch;
     private int songPosistion = 0;
     private int totalsong;
     private TextView textSongPlaying;
+    private Button buttonDownloadMusic;
         /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -95,33 +95,34 @@ public class MainActivity extends AppCompatActivity
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
-                View promptView = layoutInflater.inflate(R.layout.dialog_downloadlink, null);
+                LayoutInflater layoutAddmusic = LayoutInflater.from(MainActivity.this);
+                View viewAddMusic = layoutAddmusic.inflate(R.layout.dialog_addmusic, null);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                alertDialogBuilder.setView(promptView);
-                editTextName = (EditText) promptView.findViewById(R.id.textInputName);
-                editTextLink = (EditText) promptView.findViewById(R.id.textInputLink);
-                // setup a dialog window
-                alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // declare the dialog as a member field of your activity
-                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
-                                intent.putExtra("URL", editTextLink.getText().toString());
-                                intent.putExtra("NAME",editTextName.getText().toString());
-                                startService(intent);
-                            }
-                        })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                // create an alert dialog
+                alertDialogBuilder.setView(viewAddMusic);
                 AlertDialog alert = alertDialogBuilder.create();
-                alert.show();
+                alert.show();)
+//                editTextName = (EditText) viewAddMusic.findViewById(R.id.textInputName);
+//                editTextLink = (EditText) viewAddMusic.findViewById(R.id.textInputLink);
+                // setup a dialog window
+//                alertDialogBuilder.setCancelable(false)
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                // declare the dialog as a member field of your activity
+//                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+//                                intent.putExtra("URL", editTextLink.getText().toString());
+//                                intent.putExtra("NAME",editTextName.getText().toString());
+//                                startService(intent);
+//                            }
+//                        })
+//                        .setNegativeButton("Cancel",
+//                                new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int id) {
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//                // create an alert dialog
+
+
 
             }
         });
