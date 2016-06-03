@@ -1,5 +1,6 @@
 package com.example.linh.musicplayer;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -96,42 +98,7 @@ public class MainActivity extends AppCompatActivity
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final LayoutInflater layoutAddmusic = LayoutInflater.from(MainActivity.this);
-                final View viewAddMusic = layoutAddmusic.inflate(R.layout.dialog_addmusic, null);
-                final View viewDownloadMusic = layoutAddmusic.inflate(R.layout.dialog_downloadlink,null);
-                editTextLink = (EditText) viewDownloadMusic.findViewById(R.id.textInputLink);
-                editTextName  = (EditText) viewDownloadMusic.findViewById(R.id.textInputName);
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                alertDialogBuilder.setView(viewAddMusic);
-                final AlertDialog alertAddMusic = alertDialogBuilder.create();
-                alertAddMusic.show();
-                buttonDownloadMusic = (Button) viewAddMusic.findViewById(R.id.buttonDownwload);
-                buttonDownloadMusic.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertAddMusic.cancel();
-                        alertDialogBuilder.setView(viewDownloadMusic);
-                        alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(MainActivity.this, DownloadService.class);
-                                intent.putExtra("URL", editTextLink.getText().toString());
-                                intent.putExtra("NAME",editTextName.getText().toString());
-                                startService(intent);
-                            }
-                        })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        final AlertDialog alertDownloadMusic = alertDialogBuilder.create();
-                        alertDownloadMusic.show();
-                    }
-                });
-                buttonOpenfile = (Button) viewAddMusic.findViewById(R.id.buttonOpenfile);
-            }
+                displayAddmusicDialog();}
         });
         buttonNext = (Button) findViewById(R.id.buttonForward);
         buttonNext.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +147,15 @@ public class MainActivity extends AppCompatActivity
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setContentView(R.layout.dialog_downloadlink);
+        dialog.setTitle("Dialog download link");
+        dialog.setCancelable(true);
+        return dialog;
+    }
+
     @Subscribe
     public void onMessageEvent(MessageEvent event){
         runOnUiThread(new Runnable() {
@@ -190,12 +166,63 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    public void displayAddmusicDialog()
+    {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout  = inflater.inflate(R.layout.dialog_addmusic,null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+        alert.setTitle("Add music");
+        final AlertDialog dialog = alert.create();
+        dialog.show();
+        buttonDownloadMusic = (Button) alertLayout.findViewById(R.id.buttonDownwload);
+        buttonDownloadMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+                displayDownloadMusicDialog();
+            }
+        });
+        buttonOpenfile = (Button) alertLayout.findViewById(R.id.buttonOpenfile);
+    }
+
+    private void displayDownloadMusicDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout  = inflater.inflate(R.layout.dialog_downloadlink,null);
+        editTextLink = (EditText) alertLayout.findViewById(R.id.textInputLink);
+        editTextName = (EditText) alertLayout.findViewById(R.id.textInputName);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Download music");
+        alert.setView(alertLayout);
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+                intent.putExtra("URL", editTextLink.getText().toString());
+                intent.putExtra("NAME",editTextName.getText().toString());
+                startService(intent);
+
+            }
+        });
+        final AlertDialog dialog = alert.create();
+        dialog.show();
+    }
 
     public void songplay()
     {
         textSongPlaying.setText(songname);
         mediaPlayer.stop();
-        songname = lv.getItemAtPosition(songPosistion).toString();
+        if(totalsong  > 0)
+        {
+            songname = lv.getItemAtPosition(songPosistion).toString();
+        }
+
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/" + songname;
         mediaPlayer.reset();
         try {
