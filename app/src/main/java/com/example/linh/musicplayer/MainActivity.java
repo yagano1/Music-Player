@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -36,6 +35,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     private TextView textSongPlaying;
     private Button buttonDownloadMusic;
     private Button buttonOpenfile;
+    private File root;
+    private List<String> fileList = new ArrayList<String>();
         /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        root = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         EventBus.getDefault().register(MainActivity.this);
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/"+songname;
         setContentView(R.layout.activity_main);
@@ -184,6 +188,83 @@ public class MainActivity extends AppCompatActivity
             }
         });
         buttonOpenfile = (Button) alertLayout.findViewById(R.id.buttonOpenfile);
+        buttonOpenfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+                displayOpenFileDialog();
+                curFolder = root;
+            }
+        });
+    }
+    ListView listviewFolder;
+    TextView textFolder;
+    Button buttonParentFolder;
+    File curFolder;
+
+    private void displayOpenFileDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout  = inflater.inflate(R.layout.diaglog_openfile,null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Open music");
+        alert.setView(alertLayout);
+        final AlertDialog dialog = alert.create();
+        dialog.show();
+        textFolder = (TextView) alertLayout.findViewById(R.id.textFolder);
+        listviewFolder = (ListView) alertLayout.findViewById(R.id.listviewFolder);
+        buttonParentFolder = (Button) alertLayout.findViewById(R.id.buttonParent);
+        listDir(root);
+        buttonParentFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listDir(curFolder.getParentFile());
+            }
+        });
+        listviewFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                File selected = new File(fileList.get(position));
+                if(selected.isDirectory())
+                {
+                    listDir(selected);
+                }
+                else
+                {
+                    fileMusicPatch = selected.getAbsolutePath();
+                    mediaPlayer.reset();
+                    textSongPlaying.setText(selected.getName());
+                    try {
+                        mediaPlayer.setDataSource(fileMusicPatch);
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    dialog.cancel();
+                }
+            }
+        });
+    }
+
+    private void listDir(File f) {
+        if(f.equals(root))
+        {
+            buttonParentFolder.setEnabled(false);
+        }
+        else
+        {
+            buttonParentFolder.setEnabled(true);
+        }
+
+        curFolder = f;
+        textFolder.setText(f.getPath());
+        File[] files  = f.listFiles();
+        fileList.clear();
+        for(File file : files)
+        {
+            fileList.add(file.getPath());
+        }
+        ArrayAdapter<String> direciryList = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,fileList);
+        listviewFolder.setAdapter(direciryList);
     }
 
     private void displayDownloadMusicDialog() {
@@ -199,7 +280,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
             }
         });
-        alert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton("Download", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
