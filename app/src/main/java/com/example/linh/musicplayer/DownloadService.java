@@ -23,7 +23,6 @@ import java.net.URLConnection;
 
 
 public class DownloadService extends IntentService {
-    public static final int UPDATE_PROGRESS = 8344;
     public DownloadService() {
         super("DownloadService");
     }
@@ -40,7 +39,6 @@ public class DownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String urlToDownload = intent.getStringExtra("URL");
         String songName = intent.getStringExtra("NAME");
-        ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
         dlnottification = (NotificationManager)  getSystemService(NOTIFICATION_SERVICE);
         builder =  new NotificationCompat.Builder(this);
         builder.setContentTitle("Download Music")
@@ -99,6 +97,7 @@ private int lastupdate = 0;
                         .setProgress(0, 0, false).setOngoing(false).setContentInfo("");
 
                 dlnottification.notify(12, builder.build());
+                dlnottification.cancelAll();
             }
 
         }

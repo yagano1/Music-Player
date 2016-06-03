@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(songPosistion < totalsong)
+                if(songPosistion < totalsong -1 )
                 {
                     songPosistion = songPosistion + 1;
                     songplay();
@@ -288,7 +288,6 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("URL", editTextLink.getText().toString());
                 intent.putExtra("NAME",editTextName.getText().toString());
                 startService(intent);
-
             }
         });
         final AlertDialog dialog = alert.create();
@@ -297,11 +296,12 @@ public class MainActivity extends AppCompatActivity
 
     public void songplay()
     {
-        textSongPlaying.setText(songname);
+
         mediaPlayer.stop();
         if(totalsong  > 0)
         {
             songname = lv.getItemAtPosition(songPosistion).toString();
+            textSongPlaying.setText(songname);
         }
 
         fileMusicPatch = Environment.getExternalStorageDirectory() + "/" + "data/" + songname;
@@ -319,10 +319,11 @@ public class MainActivity extends AppCompatActivity
 
         File dir = new File(Environment.getExternalStorageDirectory() + "/" + "data/");
         File[] filelist = dir.listFiles();
+        totalsong = filelist.length;
         String[] theNamesOfFiles = new String[filelist.length];
         for (int i = 0; i < theNamesOfFiles.length; i++) {
             theNamesOfFiles[i] = filelist[i].getName();
-            totalsong = i;
+
         }
         lv = (ListView) findViewById(R.id.listMusic);
         lv.invalidateViews();
