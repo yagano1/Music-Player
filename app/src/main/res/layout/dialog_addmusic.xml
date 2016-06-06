@@ -11,6 +11,6 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_openfile"
+        android:text="Import link from txt"
         android:id="@+id/buttonOpenfile"/>
 </LinearLayout>

@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -33,7 +34,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,6 +233,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 else
                 {
+                    readTxtFile(selected.getAbsolutePath());
                     fileMusicPatch = selected.getAbsolutePath();
                     mediaPlayer.reset();
                     textSongPlaying.setText(selected.getName());
@@ -244,6 +248,31 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+    String[] mutilLinkl = new String[100];
+    private void readTxtFile(String absolutePath) {
+        StringBuilder text = new StringBuilder();
+    int i = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(absolutePath));
+            String line = br.readLine();
+                       while (line  != null) {
+                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+                intent.putExtra("URL", line);
+                intent.putExtra("NAME", "a" + i);
+                startService(intent);
+                           i++;
+                line =  br.readLine();
+            }
+            br.close();
+                    }
+        catch (IOException e) {
+            //You'll need to add proper error handling here
+        }
+        Toast.makeText(MainActivity.this,mutilLinkl[4],
+                Toast.LENGTH_LONG).show();
+
+    }
+
 
     private void listDir(File f) {
         if(f.equals(root))
